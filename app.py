@@ -31,6 +31,8 @@ app = Flask(__name__)
 # mycursor = mydb.cursor()
 
 database = MySQLdb.connect(host = "us-cdbr-east-02.cleardb.com", user = "bc567cb4d3a9ca", passwd = "1d89f657", db = "heroku_54035f2c838a007", cursorclass=MySQLdb.cursors.DictCursor)
+#database = MySQLdb.connect(host = "localhost", user = "root", passwd = "pageone1Q", db = "speakerrecognition", cursorclass=MySQLdb.cursors.DictCursor)
+
 c = database.cursor()
 
 # mycursor.execute("CREATE TABLE host (host_id INT AUTO_INCREMENT PRIMARY KEY, host_name VARCHAR(255))")
@@ -293,62 +295,62 @@ def buildModel():
 
   return 'Build model successfully'
 
-# @app.route('/rollRoom', methods = [ 'POST'])
-# def rollRoom():
-#   host_id = request.args.get('host_id')
-#   client_id = request.args.get('client_id')
-#   print("HOSTID")
-#   print(host_id)
-#   print("cLIENTID")
-#   print(client_id)
-#   #cur = mysql.connection.cursor()
-#   c.execute( "SELECT test_folder FROM user WHERE client_id = %s", [client_id] )
-#   user = c.fetchone()
-#   testFolder = user['test_folder']
-#   print("TEST FOLDER ")
-#   print(testFolder)
-#   modelpath = "Speakers_models/"
-#   gmm_files = [os.path.join(modelpath,fname) for fname in  os.listdir(modelpath) if fname.endswith('.gmm')]
+@app.route('/rollRoom', methods = [ 'POST'])
+def rollRoom():
+  host_id = request.args.get('host_id')
+  client_id = request.args.get('client_id')
+  print("HOSTID")
+  print(host_id)
+  print("cLIENTID")
+  print(client_id)
+  #cur = mysql.connection.cursor()
+  c.execute( "SELECT test_folder FROM user WHERE client_id = %s", [client_id] )
+  user = c.fetchone()
+  testFolder = user['test_folder']
+  print("TEST FOLDER ")
+  print(testFolder)
+  modelpath = "Speakers_models/"
+  gmm_files = [os.path.join(modelpath,fname) for fname in  os.listdir(modelpath) if fname.endswith('.gmm')]
 
-#   models = [pickle.load(open(fname,'rb')) for fname in gmm_files]
-#   speakers = [fname.split("/")[-1].split(".gmm")[0] for fname in gmm_files]
+  models = [pickle.load(open(fname,'rb')) for fname in gmm_files]
+  speakers = [fname.split("/")[-1].split(".gmm")[0] for fname in gmm_files]
 
-#   path = ""
-#   for filename in os.listdir(testFolder):
-#     if filename.endswith(".wav"):
-#       print(os.path.join(testFolder, filename))
-#       path = os.path.join(testFolder, filename)
-#       break
+  path = ""
+  for filename in os.listdir(testFolder):
+    if filename.endswith(".wav"):
+      print(os.path.join(testFolder, filename))
+      path = os.path.join(testFolder, filename)
+      break
 
-#   print("PATH")
-#   print(path)
-#   sr,audio = read( path)
-#   vector   = extract_features(audio,sr)
+  print("PATH")
+  print(path)
+  sr,audio = read( path)
+  vector   = extract_features(audio,sr)
 
-#   log_likelihood = np.zeros(len(models)) 
+  log_likelihood = np.zeros(len(models)) 
 
-#   for i in range(len(models)):
-#     gmm = models[i]  #checking with each model one by one
-#     scores = np.array(gmm.score(vector))
-#     log_likelihood[i] = scores.sum()
+  for i in range(len(models)):
+    gmm = models[i]  #checking with each model one by one
+    scores = np.array(gmm.score(vector))
+    log_likelihood[i] = scores.sum()
 
-#   winner = np.argmax(log_likelihood)
-#   print ("\tdetected as - ", speakers[winner])
+  winner = np.argmax(log_likelihood)
+  print ("\tdetected as - ", speakers[winner])
 
 
-#   if speakers[winner] == client_id:
-#     mycursor = mydb.cursor()
+  if speakers[winner] == client_id:
+    #mycursor = mydb.cursor()
 
-#     sql = "UPDATE host_user SET is_attending = %s WHERE client_id = %s AND host_id = %s"
-#     val = (True, client_id, host_id)
+    sql = "UPDATE host_user SET is_attending = %s WHERE client_id = %s AND host_id = %s"
+    val = (True, client_id, host_id)
 
-#     mycursor.execute(sql, val)
+    c.execute(sql, val)
 
-#     mydb.commit()
-#     os.remove(path)
-#     return Response(speakers[winner], status=200, mimetype='application/json')
-#   os.remove(path)
-#   return Response(speakers[winner], status=400, mimetype='application/json')
+    database.commit()
+    os.remove(path)
+    return Response(speakers[winner], status=200, mimetype='application/json')
+  os.remove(path)
+  return Response(speakers[winner], status=400, mimetype='application/json')
 
 if __name__ == '__main__':
     app.run(debug=False,host='0.0.0.0')

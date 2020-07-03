@@ -30,8 +30,8 @@ app = Flask(__name__)
 
 # mycursor = mydb.cursor()
 
-#database = MySQLdb.connect(host = "us-cdbr-east-02.cleardb.com", user = "bc567cb4d3a9ca", passwd = "1d89f657", db = "heroku_54035f2c838a007", cursorclass=MySQLdb.cursors.DictCursor)
-database = MySQLdb.connect(host = "localhost", user = "root", passwd = "pageone1Q", db = "speakerrecognition", cursorclass=MySQLdb.cursors.DictCursor)
+database = MySQLdb.connect(host = "us-cdbr-east-02.cleardb.com", user = "bc567cb4d3a9ca", passwd = "1d89f657", db = "heroku_54035f2c838a007", cursorclass=MySQLdb.cursors.DictCursor)
+#database = MySQLdb.connect(host = "localhost", user = "root", passwd = "pageone1Q", db = "speakerrecognition", cursorclass=MySQLdb.cursors.DictCursor)
 
 c = database.cursor()
 
